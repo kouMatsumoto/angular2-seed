@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require('@angular/core');
 var router_deprecated_1 = require('@angular/router-deprecated');
+var hero_detail_component_1 = require('./hero-detail.component');
 var hero_service_1 = require('./hero.service');
 var HeroesComponent = (function () {
     function HeroesComponent(router, heroService) {
@@ -21,13 +22,32 @@ var HeroesComponent = (function () {
             name: 'Windstorm'
         };
     }
+    HeroesComponent.prototype.addHero = function () {
+        this.addingHero = true;
+        this.selectedHero = null;
+    };
+    HeroesComponent.prototype.delete = function (hero, event) {
+        var _this = this;
+        event.stopPropagation();
+        this.heroService.delete(hero)
+            .then(function (res) {
+            _this.heroes = _this.heroes.filter(function (h) { return h !== hero; });
+            if (_this.selectedHero === hero) {
+                _this.selectedHero = null;
+            }
+        }).catch(function (error) { return _this.error = error; } // TODO: Display error message
+         // TODO: Display error message
+        );
+    };
+    HeroesComponent.prototype.close = function (savedHero) {
+        this.addingHero = false;
+        if (savedHero) {
+            this.getHeroes();
+        }
+    };
     HeroesComponent.prototype.getHeroes = function () {
         var _this = this;
         this.heroService.getHeroes().then(function (heroes) { return _this.heroes = heroes; });
-        // this.heroService.getHeroesSlowly().then(
-        //   heroes =>
-        //     this.heroes = heroes
-        // );
     };
     HeroesComponent.prototype.ngOnInit = function () {
         this.getHeroes();
@@ -42,7 +62,8 @@ var HeroesComponent = (function () {
         core_1.Component({
             selector: 'my-heroes',
             templateUrl: 'app/heroes.component.html',
-            styleUrls: ['app/heroes.component.css']
+            styleUrls: ['app/heroes.component.css'],
+            directives: [hero_detail_component_1.HeroDetailComponent]
         }), 
         __metadata('design:paramtypes', [router_deprecated_1.Router, hero_service_1.HeroService])
     ], HeroesComponent);
